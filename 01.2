@@ -1,0 +1,10 @@
+public static byte[] EncryptPassword(string clearText, string password, string salt)
+{
+    byte[] saltBytes = Encoding.Unicode.GetBytes(salt);
+    byte[] clearBytes = System.Text.Encoding.Unicode.GetBytes(clearText);
+    PasswordDeriveBytes pdb = new PasswordDeriveBytes(password, saltBytes);
+
+    byte[] encryptedData = EncryptPW(clearBytes, pdb.GetBytes(32), pdb.GetBytes(16));
+    //return Convert.ToBase64String(encryptedData); //For returning string instead
+    return encryptedData;
+} 
