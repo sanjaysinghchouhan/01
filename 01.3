@@ -1,0 +1,43 @@
+private static void DecryptFile(string inputFile, byte[] key)
+{
+    string ext = Path.GetExtension(inputFile);
+    string outputFile = inputFile.Replace(ext, "_enc" + ext);
+
+    //Prepare the file for decryption by getting it into a stream
+    FileStream fsCrypt = new FileStream(inputFile, FileMode.Open);
+
+    //Setup the Decryption Standard using Read mode
+    RijndaelManaged rijndaelCrypto = new RijndaelManaged();
+    CryptoStream cs = new CryptoStream(fsCrypt, 
+      rijndaelCrypto.CreateDecryptor(key, key), CryptoStreamMode.Read);
+
+    //Write the decrypted file stream
+    FileStream fsOut = new FileStream(outputFile, FileMode.Create);
+    try
+    {
+        int data;
+        while ((data = cs.ReadByte()) != -1)
+        { fsOut.WriteByte((byte)data); }
+
+        //Close all the Writers
+        fsOut.Close();
+        cs.Close();
+        fsCrypt.Close();
+
+        //Delete the original file
+        File.Delete(inputFile);
+        //Rename the encrypted file to that of the original
+        File.Copy(outputFile, inputFile);
+        File.Delete(outputFile);
+    }
+    catch (Exception ex)
+    {
+        throw ex;
+    }
+    finally
+    {
+        fsOut = null;
+        cs = null;
+        fsCrypt = null;
+    }
+} 
