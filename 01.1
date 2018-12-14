@@ -1,0 +1,40 @@
+private static void EncryptFile(string inputFile, byte[] key)
+{
+    try
+    {
+        string ext = Path.GetExtension(inputFile);
+        string outputFile = inputFile.Replace(ext, "_enc" + ext);
+
+        //Prepare the file for encryption by getting it into a stream
+        string cryptFile = outputFile;
+        FileStream fsCrypt = new FileStream(cryptFile, FileMode.Create);
+
+        //Setup the Encryption Standard using Write mode
+        RijndaelManaged rijndaelCrypto = new RijndaelManaged();
+        CryptoStream cs = new CryptoStream(fsCrypt, 
+          rijndaelCrypto.CreateEncryptor(key, key), CryptoStreamMode.Write);
+
+        //Write the encrypted file stream
+        FileStream fsIn = new FileStream(inputFile, FileMode.Open);
+        int data;
+        while ((data = fsIn.ReadByte()) != -1)
+        {
+            cs.WriteByte((byte)data);
+        }
+
+        //Close all the Writers
+        fsIn.Close();
+        cs.Close();
+        fsCrypt.Close();
+
+        //Delete the original file
+        File.Delete(inputFile);
+        //Rename the encrypted file to that of the original
+        File.Copy(outputFile, inputFile);
+        File.Delete(outputFile);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+} 
