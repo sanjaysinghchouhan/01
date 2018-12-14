@@ -1,0 +1,26 @@
+private static void GetAllFilesInDir(DirectoryInfo dir, string searchPattern)
+{
+    // list the files
+    try
+    {
+        foreach (FileInfo f in dir.GetFiles(searchPattern))
+        {
+            //Console.WriteLine("File {0}", f.FullName);
+            files.Add(f);
+        }
+    }
+    catch
+    {
+        Console.WriteLine("Directory {0}  \n could not be accessed!!!!", dir.FullName);
+        return;  // We already got an error trying to access dir so don't try to access it again
+    }
+
+    // process each directory
+    // If I have been able to see the files in the directory I should also be able 
+    // to look at its directories so I don't think I should place this in a try catch block
+    foreach (DirectoryInfo d in dir.GetDirectories())
+    {
+        folders.Add(d);
+        GetAllFilesInDir(d, searchPattern);
+    }
+} 
